@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Del Idea al Producto Digital — Guía para Emprendedores y Desarrolladores</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --azul:#0F172A;
+  --azul-mid:#1E3A5F;
+  --azul-accent:#3B82F6;
+  --verde:#059669;
+  --verde-light:#D1FAE5;
+  --amarillo:#F59E0B;
+  --rojo:#EF4444;
+  --gris-bg:#F8FAFC;
+  --gris-borde:#E2E8F0;
+  --gris-texto:#64748B;
+  --blanco:#FFFFFF;
+  --negro:#0F172A;
+  --mono:'JetBrains Mono',monospace;
+}
+
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:var(--azul);color:var(--blanco)}
+
+/* ── SLIDES ── */
+.slides-wrap{position:relative;width:100vw;height:100vh;overflow:hidden}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s ease, transform .4s ease;
+  transform:translateX(40px);
+  overflow-y:auto;
+}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.out{opacity:0;transform:translateX(-40px)}
+
+/* ── PROGRESS BAR ── */
+.progress{
+  position:fixed;top:0;left:0;right:0;height:3px;
+  background:rgba(255,255,255,0.1);z-index:100;
+}
+.progress-bar{height:100%;background:var(--azul-accent);transition:width .4s ease}
+
+/* ── SLIDE COUNTER ── */
+.slide-counter{
+  position:fixed;bottom:20px;right:24px;
+  font-size:.75rem;font-weight:600;color:rgba(255,255,255,0.4);
+  font-family:var(--mono);z-index:100;
+}
+
+/* ── NAV BUTTONS ── */
+.nav-btn{
+  position:fixed;bottom:16px;z-index:100;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);
+  color:#fff;border-radius:12px;
+  padding:10px 20px;font-size:.85rem;font-weight:600;
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:all .15s;backdrop-filter:blur(8px);
+}
+.nav-btn:hover{background:rgba(255,255,255,0.16)}
+.nav-btn:disabled{opacity:.25;cursor:default}
+.nav-prev{left:16px}
+.nav-next{left:50%;transform:translateX(-50%)}
+
+/* ── SLIDE INDEX (puntos) ── */
+.dots{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  display:flex;gap:6px;z-index:100;
+}
+.dot{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,0.2);
+  cursor:pointer;transition:all .2s;
+}
+.dot.active{background:#fff;width:20px;border-radius:3px}
+
+/* ══════════════════════════════════════
+   SLIDE LAYOUTS
+══════════════════════════════════════ */
+
+/* PORTADA */
+.slide-portada{
+  background:linear-gradient(135deg,#0F172A 0%,#1E3A5F 50%,#0F3460 100%);
+  align-items:center;justify-content:center;text-align:center;padding:40px 24px;
+}
+.portada-eyebrow{
+  font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--azul-accent);margin-bottom:24px;
+}
+.portada-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(2rem,5vw,3.2rem);font-weight:800;
+  line-height:1.1;margin-bottom:20px;
+  background:linear-gradient(135deg,#fff 0%,#93C5FD 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.portada-sub{font-size:1.05rem;color:#94A3B8;max-width:560px;line-height:1.7;margin-bottom:36px}
+.portada-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:40px}
+.portada-tag{
+  background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);
+  color:#93C5FD;font-size:.78rem;font-weight:600;
+  padding:6px 14px;border-radius:20px;
+}
+.portada-app{
+  display:inline-flex;align-items:center;gap:12px;
+  background:rgba(5,150,105,0.15);border:1px solid rgba(5,150,105,0.3);
+  border-radius:16px;padding:14px 20px;
+}
+.portada-app svg{width:40px;height:40px}
+.portada-app-info{text-align:left}
+.portada-app-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1rem;color:#34D399}
+.portada-app-desc{font-size:.78rem;color:#6EE7B7}
+
+/* SLIDE ESTÁNDAR */
+.slide-std{
+  background:var(--azul);
+  padding:70px 40px 80px;
+  max-width:900px;margin:0 auto;width:100%;
+}
+.slide-eyebrow{
+  font-size:.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--azul-accent);margin-bottom:10px;
+}
+.slide-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(1.6rem,3.5vw,2.2rem);font-weight:800;
+  line-height:1.2;margin-bottom:8px;color:#fff;
+}
+.slide-subtitle{font-size:.95rem;color:#94A3B8;margin-bottom:32px;line-height:1.6}
+
+/* GRID 2 columnas */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;padding:18px;
+}
+.card-accent{border-left:3px solid var(--azul-accent)}
+.card-verde{border-left:3px solid var(--verde)}
+.card-amarillo{border-left:3px solid var(--amarillo)}
+.card-rojo{border-left:3px solid var(--rojo)}
+.card-icon{font-size:1.6rem;margin-bottom:10px}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:700;margin-bottom:6px;color:#fff}
+.card-body{font-size:.8rem;color:#94A3B8;line-height:1.6}
+
+/* TABLE */
+.tabla{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:16px}
+.tabla th{
+  background:rgba(59,130,246,0.15);color:#93C5FD;
+  font-weight:700;padding:10px 14px;text-align:left;
+  border-bottom:1px solid rgba(59,130,246,0.2);
+}
+.tabla td{padding:9px 14px;border-bottom:1px solid rgba(255,255,255,0.05);color:#CBD5E1;vertical-align:top}
+.tabla tr:last-child td{border-bottom:none}
+.tabla tr:hover td{background:rgba(255,255,255,0.03)}
+
+/* CODE BLOCK */
+.code{
+  background:#0D1117;border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;padding:14px 16px;
+  font-family:var(--mono);font-size:.78rem;color:#E6EDF3;
+  margin-bottom:14px;overflow-x:auto;line-height:1.7;
+}
+.code .c{color:#8B949E}
+.code .k{color:#FF7B72}
+.code .s{color:#A5D6FF}
+.code .n{color:#79C0FF}
+.code .v{color:#FFA657}
+
+/* BADGE */
+.badge{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:.7rem;font-weight:700;letter-spacing:.3px;
+}
+.badge-azul{background:rgba(59,130,246,0.2);color:#93C5FD}
+.badge-verde{background:rgba(5,150,105,0.2);color:#34D399}
+.badge-amarillo{background:rgba(245,158,11,0.2);color:#FCD34D}
+.badge-rojo{background:rgba(239,68,68,0.2);color:#FCA5A5}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:16px;padding-bottom:20px;position:relative}
+.tl-item:last-child{padding-bottom:0}
+.tl-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.tl-dot{width:32px;height:32px;border-radius:50%;background:var(--azul-accent);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0}
+.tl-line{width:2px;flex:1;background:rgba(255,255,255,0.08);margin-top:4px}
+.tl-item:last-child .tl-line{display:none}
+.tl-content{padding-top:4px}
+.tl-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.92rem;color:#fff;margin-bottom:4px}
+.tl-body{font-size:.8rem;color:#94A3B8;line-height:1.6}
+
+/* HIGHLIGHT BOX */
+.highlight{
+  background:linear-gradient(135deg,rgba(59,130,246,0.1),rgba(5,150,105,0.1));
+  border:1px solid rgba(59,130,246,0.2);
+  border-radius:12px;padding:16px;margin-bottom:16px;
+}
+.highlight-title{font-weight:700;font-size:.85rem;color:#93C5FD;margin-bottom:6px}
+.highlight-body{font-size:.82rem;color:#CBD5E1;line-height:1.6}
+
+/* ARCH DIAGRAM */
+.arch{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:16px 0;margin-bottom:16px}
+.arch-box{
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+  border-radius:10px;padding:10px 16px;text-align:center;font-size:.78rem;
+  font-weight:600;color:#fff;min-width:90px;
+}
+.arch-box.accent{background:rgba(59,130,246,0.2);border-color:rgba(59,130,246,0.4);color:#93C5FD}
+.arch-box.verde{background:rgba(5,150,105,0.2);border-color:rgba(5,150,105,0.4);color:#34D399}
+.arch-arrow{color:#475569;font-size:1.2rem}
+
+/* LIST */
+.lista{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.lista li{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:.83rem;color:#CBD5E1;line-height:1.5;
+}
+.lista li::before{content:'→';color:var(--azul-accent);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* COMPARISON */
+.comparison{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.comp-col{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px}
+.comp-header{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.comp-item{font-size:.78rem;color:#94A3B8;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.5}
+.comp-item:last-child{border-bottom:none}
+
+/* FASE HEADER */
+.fase-header{
+  display:flex;align-items:center;gap:14px;margin-bottom:24px;
+  padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.fase-num{
+  width:48px;height:48px;border-radius:12px;
+  background:var(--azul-accent);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:800;
+  flex-shrink:0;
+}
+.fase-info{}
+.fase-label{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--azul-accent);margin-bottom:2px}
+.fase-nombre{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700;color:#fff}
+
+/* PRECIOSCAN EXAMPLE BOX */
+.ejemplo{
+  background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.2);
+  border-radius:12px;padding:14px 16px;margin-top:16px;
+}
+.ejemplo-label{font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#34D399;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ejemplo-body{font-size:.82rem;color:#A7F3D0;line-height:1.6}
+
+/* SLIDE CIERRE */
+.slide-cierre{
+  background:linear-gradient(135deg,#0F172A 0%,#064E3B 100%);
+  align-items:center;justify-content:center;text-align:center;padding:40px 24px;
+}
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+<div class="dots" id="dots"></div>
+<div class="slide-counter" id="slideCounter"></div>
+
+<div class="slides-wrap" id="slidesWrap">
+
+<!-- ══ SLIDE 0: PORTADA ══ -->
+<div class="slide slide-portada active" data-slide="0">
+  <div class="portada-eyebrow">Guía Profesional · DAW · DAM · Emprendimiento Digital</div>
+  <div class="portada-title">Del Idea al<br>Producto Digital</div>
+  <div class="portada-sub">Cómo investigar, diseñar, desarrollar, desplegar y mantener una aplicación real. Arquitecturas, APIs, control de proyectos y visión emprendedora.</div>
+  <div class="portada-tags">
+    <span class="portada-tag">Fase 1 — Investigación</span>
+    <span class="portada-tag">Fase 2 — Recursos y APIs</span>
+    <span class="portada-tag">Fase 3 — Gestión</span>
+    <span class="portada-tag">Fase 4 — Despliegue</span>
+    <span class="portada-tag">Fase 5 — Mantenimiento</span>
+  </div>
+  <div class="portada-app">
+    <svg viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
+      <rect width="680" height="680" rx="140" fill="#1B5E20"/>
+      <rect x="130" y="240" width="420" height="300" rx="40" fill="#FFF"/>
+      <rect x="240" y="195" width="140" height="65" rx="20" fill="#FFF"/>
+      <circle cx="340" cy="390" r="110" fill="#1B5E20"/>
+      <circle cx="340" cy="390" r="60" fill="#E8F5E9"/>
+      <circle cx="315" cy="365" r="18" fill="#FFF" opacity=".6"/>
+      <rect x="160" y="268" width="44" height="30" rx="8" fill="#FFC107"/>
+      <rect x="390" y="180" width="160" height="80" rx="12" fill="#FFC107"/>
+      <text x="468" y="231" font-family="Arial" font-size="42" font-weight="700" fill="#1B5E20" text-anchor="middle">€</text>
+    </svg>
+    <div class="portada-app-info">
+      <div class="portada-app-name">PrecioScan</div>
+      <div class="portada-app-desc">Proyecto de ejemplo a lo largo de la presentación</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 1: ¿QUÉ ES UN PRODUCTO DIGITAL? ══ -->
+<div class="slide slide-std" data-slide="1">
+  <div class="slide-eyebrow">Conceptos base</div>
+  <div class="slide-title">¿Qué es un Producto Digital?</div>
+  <div class="slide-subtitle">Un producto digital es cualquier software que resuelve un problema real y puede distribuirse, venderse o usarse a través de internet o dispositivos.</div>
+  <div class="grid-3">
+    <div class="card card-accent">
+      <div class="card-icon">🌐</div>
+      <div class="card-title">DAW — Aplicación Web</div>
+      <div class="card-body">Se ejecuta en el navegador. HTML, CSS, JavaScript, frameworks como Laravel, React, Vue. Accesible desde cualquier dispositivo con internet.</div>
+    </div>
+    <div class="card card-verde">
+      <div class="card-icon">📱</div>
+      <div class="card-title">DAM — Aplicación Móvil</div>
+      <div class="card-body">Se ejecuta en Android o iOS. Puede ser nativa (Swift, Kotlin), híbrida (.NET MAUI, Flutter) o web progresiva (PWA).</div>
+    </div>
+    <div class="card card-amarillo">
+      <div class="card-icon">🖥️</div>
+      <div class="card-title">Aplicación de Escritorio</div>
+      <div class="card-body">Se instala en Windows, Mac o Linux. WPF, Electron, .NET MAUI Desktop. Ideal para uso offline intensivo o hardware especializado.</div>
+    </div>
+  </div>
+  <div class="highlight">
+    <div class="highlight-title">🔗 ¿Se pueden combinar?</div>
+    <div class="highlight-body">Sí — y es lo habitual. Una plataforma moderna tiene una <strong>app móvil</strong> (DAM) para el usuario final, una <strong>web de administración</strong> (DAW) para el gestor, y un <strong>backend API</strong> que conecta ambas. A esto se le llama arquitectura <strong>full-stack o SaaS</strong>.</div>
+  </div>
+  <div class="ejemplo">
+    <div class="ejemplo-label">📱 Ejemplo · PrecioScan</div>
+    <div class="ejemplo-body"><strong>DAM:</strong> App .NET MAUI para Android/iOS — el usuario fotografía productos.<br><strong>DAW:</strong> Panel Laravel para el administrador — gestiona usuarios, suscripciones, estadísticas.<br><strong>API:</strong> Backend Laravel que conecta ambas y llama a servicios externos (Anthropic OCR, Google Maps).</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 2: ARQUITECTURAS ══ -->
+<div class="slide slide-std" data-slide="2">
+  <div class="slide-eyebrow">Conceptos base</div>
+  <div class="slide-title">Arquitecturas de Software</div>
+  <div class="slide-subtitle">La arquitectura define cómo se organiza y comunica el código. Elegir bien desde el principio ahorra meses de trabajo.</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">🏛️ Monolítica</div>
+      <div class="card-body">Todo el código en una sola aplicación. Fácil de empezar, difícil de escalar. Válida para proyectos pequeños o MVPs.<br><br><span class="badge badge-verde">Ventaja</span> Simple · <span class="badge badge-rojo">Riesgo</span> Escala mal</div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-title">⚙️ API REST + Clientes</div>
+      <div class="card-body">Backend expone endpoints JSON. Cualquier cliente (web, móvil, escritorio) consume la misma API. Es el estándar actual.<br><br><span class="badge badge-verde">Ventaja</span> Flexible · <span class="badge badge-azul">Estándar</span> Más usado</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🧩 Microservicios</div>
+      <div class="card-body">Cada funcionalidad es un servicio independiente. Alta complejidad, pero escala infinitamente. Para grandes empresas.<br><br><span class="badge badge-amarillo">Nivel</span> Avanzado · <span class="badge badge-rojo">Riesgo</span> Complejo</div>
+    </div>
+    <div class="card">
+      <div class="card-title">☁️ Serverless</div>
+      <div class="card-body">Funciones en la nube que se ejecutan solo cuando se necesitan. Sin servidor permanente. AWS Lambda, Cloudflare Workers.<br><br><span class="badge badge-verde">Ventaja</span> Coste 0 en reposo</div>
+    </div>
+  </div>
+  <div class="arch">
+    <div class="arch-box accent">App Móvil<br><small>MAUI</small></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box verde">API REST<br><small>Laravel</small></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box">Base de datos<br><small>MySQL</small></div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-box accent">APIs externas<br><small>Anthropic, Maps</small></div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 3: FASE 1 — INVESTIGACIÓN ══ -->
+<div class="slide slide-std" data-slide="3">
+  <div class="fase-header">
+    <div class="fase-num">1</div>
+    <div class="fase-info">
+      <div class="fase-label">Fase 1</div>
+      <div class="fase-nombre">Investigación de Necesidades</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-accent" style="margin-bottom:12px">
+        <div class="card-title">📋 Documentos necesarios</div>
+        <div class="card-body">
+          <strong style="color:#93C5FD">Brief del proyecto</strong> — ¿Qué problema resuelve?<br>
+          <strong style="color:#93C5FD">Análisis de mercado</strong> — ¿Ya existe? ¿Competencia?<br>
+          <strong style="color:#93C5FD">Personas / User Stories</strong> — ¿Quién lo usa y cómo?<br>
+          <strong style="color:#93C5FD">MVP definition</strong> — ¿Qué es lo mínimo viable?<br>
+          <strong style="color:#93C5FD">KPIs</strong> — ¿Cómo mediremos el éxito?
+        </div>
+      </div>
+      <div class="card card-verde">
+        <div class="card-title">🎯 Objetivos teóricos</div>
+        <div class="card-body">
+          Definir el <strong style="color:#34D399">problema concreto</strong> que resuelve.<br>
+          Identificar al <strong style="color:#34D399">usuario objetivo</strong>.<br>
+          Estimar el <strong style="color:#34D399">tamaño del mercado</strong>.<br>
+          Decidir el <strong style="color:#34D399">modelo de negocio</strong>.<br>
+          Validar con <strong style="color:#34D399">usuarios reales</strong> antes de programar.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">👤 User Story — Formato</div>
+        <div class="card-body">
+          <div class="code" style="margin:0">
+            <span class="c">// Como [usuario]</span><br>
+            <span class="c">// Quiero [acción]</span><br>
+            <span class="c">// Para [beneficio]</span><br><br>
+            Como <span class="s">comprador habitual</span>,<br>
+            quiero <span class="s">fotografiar una etiqueta</span><br>
+            y guardar el precio con GPS,<br>
+            para <span class="s">comparar dónde es más</span><br>
+            <span class="s">barato cada producto</span>.
+          </div>
+        </div>
+      </div>
+      <div class="card card-amarillo">
+        <div class="card-title">⚠️ Error más común</div>
+        <div class="card-body">Empezar a programar sin validar la idea. Un prototipo en papel o Figma de 2 días puede ahorrarte 2 meses de desarrollo en la dirección equivocada.</div>
+      </div>
+    </div>
+  </div>
+  <div class="ejemplo">
+    <div class="ejemplo-label">📱 Ejemplo · PrecioScan — Fase 1</div>
+    <div class="ejemplo-body">
+      <strong>Problema:</strong> El usuario no recuerda dónde vio el producto más barato ni a qué precio.<br>
+      <strong>Usuario:</strong> Persona que hace la compra familiar en varios supermercados.<br>
+      <strong>MVP:</strong> Foto + GPS + precio + listado ordenado por precio. Sin registro, sin nube, sin OCR.<br>
+      <strong>Validación:</strong> 5 entrevistas con compradores habituales antes de escribir una línea de código.
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 4: FASE 2 — RECURSOS ══ -->
+<div class="slide slide-std" data-slide="4">
+  <div class="fase-header">
+    <div class="fase-num" style="background:var(--verde)">2</div>
+    <div class="fase-info">
+      <div class="fase-label" style="color:var(--verde)">Fase 2</div>
+      <div class="fase-nombre">Recursos: Hardware, Software y APIs</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card card-verde" style="margin-bottom:12px">
+      <div class="card-title">🖥️ Hardware mínimo de desarrollo</div>
+      <div class="card-body">
+        CPU: i5/Ryzen 5 o superior (compilar MAUI es intensivo)<br>
+        RAM: 16 GB recomendado (VS 2026 + emulador = 8 GB solos)<br>
+        SSD: 256 GB libre mínimo<br>
+        Dispositivo físico Android para pruebas reales
+      </div>
+    </div>
+    <div class="card card-accent" style="margin-bottom:12px">
+      <div class="card-title">🛠️ Software del proyecto</div>
+      <div class="card-body">
+        <span class="badge badge-azul">IDE</span> Visual Studio 2026 Community (MAUI)<br>
+        <span class="badge badge-azul">IDE</span> VS Code (Laravel/web)<br>
+        <span class="badge badge-verde">Backend</span> Laravel 11 + PHP 8.3<br>
+        <span class="badge badge-verde">BBDD</span> SQLite (móvil) · MySQL (servidor)<br>
+        <span class="badge badge-amarillo">Control</span> Git + GitHub
+      </div>
+    </div>
+  </div>
+  <table class="tabla">
+    <thead>
+      <tr><th>API</th><th>¿Qué hace?</th><th>Precio</th><th>Alternativa</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>🤖 Anthropic Claude</td><td>OCR inteligente de etiquetas, extrae precio/producto/sitio</td><td>~$0.0003/foto</td><td>Google Vision ($1.5/1000)</td></tr>
+      <tr><td>📍 Google Maps</td><td>Geolocalización, distancias, nombre de la tienda por GPS</td><td>Gratis hasta 28k/mes</td><td>OpenStreetMap (gratis)</td></tr>
+      <tr><td>💳 Stripe</td><td>Pagos y suscripciones</td><td>1.4% + 0.25€/transacción</td><td>PayPal, Redsys</td></tr>
+      <tr><td>📧 Resend / Mailgun</td><td>Envío de emails transaccionales</td><td>Gratis hasta 3000/mes</td><td>SendGrid</td></tr>
+      <tr><td>☁️ Cloudinary</td><td>Almacenamiento y CDN de imágenes en nube</td><td>Gratis hasta 25GB</td><td>AWS S3, Backblaze</td></tr>
+    </tbody>
+  </table>
+  <div class="ejemplo">
+    <div class="ejemplo-label">📱 Ejemplo · PrecioScan — APIs usadas</div>
+    <div class="ejemplo-body">MVP v1: solo GPS nativo + SQLite local. Sin APIs externas = coste 0.<br>v2: +Anthropic para OCR de etiquetas (~5€/mes con 500 usuarios activos).<br>v3: +Google Maps para mostrar la tienda más cercana en mapa.</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 5: FASE 3 — GESTIÓN ══ -->
+<div class="slide slide-std" data-slide="5">
+  <div class="fase-header">
+    <div class="fase-num" style="background:var(--amarillo);color:#0F172A">3</div>
+    <div class="fase-info">
+      <div class="fase-label" style="color:var(--amarillo)">Fase 3</div>
+      <div class="fase-nombre">Control y Gestión del Desarrollo</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">👥 Equipo tipo para una app</div>
+        <div class="card-body">
+          <strong style="color:#93C5FD">Product Owner</strong> — Define qué se hace y por qué<br>
+          <strong style="color:#93C5FD">Desarrollador móvil</strong> — MAUI / Flutter / nativo<br>
+          <strong style="color:#93C5FD">Desarrollador backend</strong> — Laravel / Node / Django<br>
+          <strong style="color:#93C5FD">Diseñador UI/UX</strong> — Figma, prototipos<br>
+          <strong style="color:#93C5FD">QA / Tester</strong> — Pruebas funcionales y regresión<br>
+          <strong style="color:#93C5FD">DevOps</strong> — CI/CD, servidores, monitorización
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">📐 Metodología recomendada</div>
+        <div class="card-body">
+          <span class="badge badge-azul">Scrum</span> Sprints de 2 semanas con entregables<br>
+          <span class="badge badge-verde">Kanban</span> Para mantenimiento y bugs<br>
+          <span class="badge badge-amarillo">Herramienta</span> GitHub Projects, Jira, Trello<br><br>
+          Cada tarea debe tener: descripción, criterios de aceptación, estimación en horas y responsable.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-verde" style="margin-bottom:12px">
+        <div class="card-title">📊 Ficha técnica del proyecto</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.73rem">
+<span class="n">Proyecto:</span> <span class="s">PrecioScan</span><br>
+<span class="n">Lenguaje:</span> <span class="s">C# / .NET 10 / PHP 8.3</span><br>
+<span class="n">IDE:</span> <span class="s">VS 2026 / VS Code</span><br>
+<span class="n">Repo:</span> <span class="s">GitHub (privado)</span><br>
+<span class="n">BBDD:</span> <span class="s">SQLite + MySQL</span><br>
+<span class="n">Capacidad:</span> <span class="s">500 fotos · ~1 GB</span><br>
+<span class="n">Plataforma:</span> <span class="s">Android 11+ / iOS 15+</span><br>
+<span class="n">T. desarrollo:</span> <span class="s">~3 meses (1 dev)</span><br>
+<span class="n">T. testeo:</span> <span class="s">~3 semanas</span><br>
+<span class="n">Seguridad:</span> <span class="s">Sanctum JWT, HTTPS</span>
+          </div>
+        </div>
+      </div>
+      <div class="card card-rojo">
+        <div class="card-title">🔒 Seguridad y Ciberseguridad</div>
+        <div class="card-body">
+          HTTPS obligatorio en toda comunicación.<br>
+          API keys nunca en el cliente — solo en el backend.<br>
+          Datos sensibles cifrados en la BBDD.<br>
+          Rate limiting en los endpoints de API.<br>
+          OWASP Top 10 como checklist mínimo.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 6: FASE 3b — ESTIMACIÓN ══ -->
+<div class="slide slide-std" data-slide="6">
+  <div class="slide-eyebrow">Fase 3 · Gestión</div>
+  <div class="slide-title">Estimación de Tiempos y Costes</div>
+  <div class="slide-subtitle">Una estimación realista evita promesas imposibles. Regla de oro: multiplica tu estimación inicial por 1.5.</div>
+  <table class="tabla">
+    <thead>
+      <tr><th>Módulo</th><th>Descripción</th><th>Estimación</th><th>Responsable</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>📐 Diseño UI/UX</td><td>Wireframes, prototipos Figma, guía de estilos</td><td>1 semana</td><td>Diseñador</td></tr>
+      <tr><td>🗄️ Modelo de datos</td><td>Diseño de tablas, migraciones, relaciones</td><td>2 días</td><td>Backend dev</td></tr>
+      <tr><td>📱 App móvil MVP</td><td>Foto, GPS, CRUD, listados, búsqueda</td><td>3 semanas</td><td>Móvil dev</td></tr>
+      <tr><td>🌐 Backend API</td><td>Auth, endpoints, proxy APIs externas</td><td>2 semanas</td><td>Backend dev</td></tr>
+      <tr><td>🔗 Integración APIs</td><td>Anthropic OCR, Google Maps, Stripe</td><td>1 semana</td><td>Backend dev</td></tr>
+      <tr><td>🧪 Testing</td><td>Pruebas funcionales, unitarias, dispositivos</td><td>2 semanas</td><td>QA</td></tr>
+      <tr><td>🚀 Despliegue</td><td>Servidor, CI/CD, Google Play, App Store</td><td>1 semana</td><td>DevOps</td></tr>
+      <tr><td><strong>TOTAL</strong></td><td></td><td><strong>~10 semanas</strong></td><td></td></tr>
+    </tbody>
+  </table>
+  <div class="grid-2">
+    <div class="card card-accent">
+      <div class="card-title">💰 Coste estimado (freelance)</div>
+      <div class="card-body">
+        Desarrollador móvil: ~2.000€<br>
+        Desarrollador backend: ~1.500€<br>
+        Diseñador UI: ~800€<br>
+        QA + DevOps: ~600€<br>
+        <strong style="color:#93C5FD">Total: ~5.000 – 8.000€</strong>
+      </div>
+    </div>
+    <div class="card card-verde">
+      <div class="card-title">💰 Coste estimado (empresa)</div>
+      <div class="card-body">
+        Equipo de 3 devs · 10 semanas<br>
+        Coste empresa: ~1.500€/semana/dev<br>
+        <strong style="color:#34D399">Total: ~45.000€</strong><br><br>
+        <span style="font-size:.76rem;color:#6EE7B7">Por eso los MVPs con 1 dev senior valen tanto.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 7: FASE 4 — DESPLIEGUE ══ -->
+<div class="slide slide-std" data-slide="7">
+  <div class="fase-header">
+    <div class="fase-num" style="background:#8B5CF6">4</div>
+    <div class="fase-info">
+      <div class="fase-label" style="color:#A78BFA">Fase 4</div>
+      <div class="fase-nombre">Despliegue</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">🚀 Tipos de despliegue</div>
+        <div class="card-body">
+          <span class="badge badge-azul">Continuo (CI/CD)</span> Cada commit despliega automáticamente. GitHub Actions + Railway/Forge.<br><br>
+          <span class="badge badge-verde">Por versiones</span> Releases numeradas (v1.0, v1.1). Más control, menos velocidad.<br><br>
+          <span class="badge badge-amarillo">Canary</span> Se despliega a un % de usuarios primero. Reduce riesgo.
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">🌐 ¿Dónde desplegar el backend?</div>
+        <div class="card-body">
+          <span class="badge badge-verde">Pequeño</span> Railway, Render, Fly.io — gratis/barato, sencillo<br>
+          <span class="badge badge-azul">Medio</span> VPS (Hetzner, DigitalOcean) — 5-20€/mes, control total<br>
+          <span class="badge badge-amarillo">Grande</span> AWS, GCP, Azure — escala infinita, precio variable
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-verde" style="margin-bottom:12px">
+        <div class="card-title">📱 Despliegue app móvil</div>
+        <div class="card-body">
+          <strong style="color:#34D399">Google Play Store</strong><br>
+          · Cuenta developer: 25$ único pago<br>
+          · Review: 1-3 días hábiles<br>
+          · APK firmado con keystore<br><br>
+          <strong style="color:#34D399">Apple App Store</strong><br>
+          · Cuenta developer: 99$/año<br>
+          · Review: 1-7 días (más estricta)<br>
+          · Certificado + provisioning profile
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📶 Requisitos de red</div>
+        <div class="card-body">
+          Latencia API: &lt;200ms para buena UX<br>
+          Ancho de banda: según usuarios activos<br>
+          HTTPS/TLS: obligatorio (certificado SSL)<br>
+          CDN: para imágenes y assets estáticos<br>
+          Modo offline: SQLite local + sync cuando hay red
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ejemplo">
+    <div class="ejemplo-label">📱 Ejemplo · PrecioScan — Despliegue</div>
+    <div class="ejemplo-body">
+      <strong>v1 (actual):</strong> Solo app Android, APK sideload. Sin backend. Coste: 0€.<br>
+      <strong>v2:</strong> APK en Google Play + backend en Railway (5€/mes). CI/CD con GitHub Actions.<br>
+      <strong>v3:</strong> Google Play + App Store + backend en VPS Hetzner (10€/mes) + CDN Cloudflare (gratis).
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 8: FASE 5 — MANTENIMIENTO ══ -->
+<div class="slide slide-std" data-slide="8">
+  <div class="fase-header">
+    <div class="fase-num" style="background:var(--rojo)">5</div>
+    <div class="fase-info">
+      <div class="fase-label" style="color:#FCA5A5">Fase 5</div>
+      <div class="fase-nombre">Mantenimiento y Mejora</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-rojo" style="margin-bottom:12px">
+        <div class="card-title">🐛 Control de errores y bugs</div>
+        <div class="card-body">
+          <span class="badge badge-rojo">Reactivo</span> El usuario reporta → se corrige<br>
+          <span class="badge badge-verde">Proactivo</span> Monitorización automática con <strong>Sentry</strong> o <strong>Bugsnag</strong><br><br>
+          Tipos de mantenimiento:<br>
+          · <strong>Correctivo</strong> — arreglar bugs<br>
+          · <strong>Adaptativo</strong> — nueva versión Android/iOS<br>
+          · <strong>Preventivo</strong> — refactorizar antes de que falle<br>
+          · <strong>Evolutivo</strong> — nuevas funcionalidades
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🗄️ Mantenimiento de datos</div>
+        <div class="card-body">
+          Backups automáticos diarios de la BBDD.<br>
+          Limpieza de datos huérfanos (fotos sin registro).<br>
+          Migraciones cuando cambia el esquema.<br>
+          Logs de errores con retención de 30 días.<br>
+          GDPR: derecho a borrado de datos de usuario.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-verde" style="margin-bottom:12px">
+        <div class="card-title">📈 Mejoras planificadas — PrecioScan</div>
+        <div class="card-body">
+          <span class="badge badge-verde">v2.0</span> OCR automático con Claude Vision<br>
+          <span class="badge badge-verde">v2.1</span> Sincronización en la nube<br>
+          <span class="badge badge-azul">v2.2</span> Mapa de tiendas con Google Maps<br>
+          <span class="badge badge-azul">v3.0</span> Suscripción premium 1€/mes<br>
+          <span class="badge badge-amarillo">v3.1</span> Multidispositivo — comparte con familia<br>
+          <span class="badge badge-amarillo">v4.0</span> Plataforma SaaS multiapp
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">📊 KPIs de mantenimiento</div>
+        <div class="card-body">
+          <strong>MTTR</strong> — tiempo medio de resolución de bugs<br>
+          <strong>Crash rate</strong> — % de sesiones con error<br>
+          <strong>Uptime</strong> — disponibilidad del backend (99.9%)<br>
+          <strong>DAU/MAU</strong> — usuarios activos diarios/mensuales<br>
+          <strong>Churn</strong> — tasa de abandono de suscriptores
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 9: APIs — CONEXIONES ══ -->
+<div class="slide slide-std" data-slide="9">
+  <div class="slide-eyebrow">Integración</div>
+  <div class="slide-title">Cómo se Conectan las APIs</div>
+  <div class="slide-subtitle">Una API (Application Programming Interface) es un contrato: defines cómo dos sistemas se comunican, qué datos se envían y qué se recibe.</div>
+  <div class="arch" style="flex-direction:column;align-items:stretch;gap:12px;padding:0;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">
+      <div class="arch-box accent">App Móvil<br><small>MAUI C#</small></div>
+      <div class="arch-arrow">→ HTTPS/JSON →</div>
+      <div class="arch-box verde">Backend API<br><small>Laravel PHP</small></div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div class="arch-arrow">↓</div>
+        <div class="arch-box" style="font-size:.72rem">🤖 Anthropic<br>OCR etiquetas</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div class="arch-arrow">↓</div>
+        <div class="arch-box" style="font-size:.72rem">📍 Google Maps<br>Geocodificación</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div class="arch-arrow">↓</div>
+        <div class="arch-box" style="font-size:.72rem">💳 Stripe<br>Pagos</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div class="arch-arrow">↓</div>
+        <div class="arch-box" style="font-size:.72rem">☁️ Cloudinary<br>Fotos en nube</div>
+      </div>
+    </div>
+  </div>
+  <div class="code">
+<span class="c">// Ejemplo: llamada desde Laravel a Anthropic Claude para OCR</span><br>
+<span class="k">$response</span> = Http::<span class="n">withHeaders</span>([<br>
+&nbsp;&nbsp;<span class="s">'x-api-key'</span> => <span class="v">config('services.anthropic.key')</span>,<br>
+&nbsp;&nbsp;<span class="s">'anthropic-version'</span> => <span class="s">'2023-06-01'</span>,<br>
+])-><span class="n">post</span>(<span class="s">'https://api.anthropic.com/v1/messages'</span>, [<br>
+&nbsp;&nbsp;<span class="s">'model'</span> => <span class="s">'claude-haiku-4-5'</span>,<br>
+&nbsp;&nbsp;<span class="s">'messages'</span> => [[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="s">'role'</span> => <span class="s">'user'</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="s">'content'</span> => [imagen_base64, <span class="s">'Extrae producto, precio y sitio en JSON'</span>]<br>
+&nbsp;&nbsp;]]<br>
+]);<br>
+<span class="k">$datos</span> = json_decode(<span class="k">$response</span>-><span class="n">json</span>(<span class="s">'content.0.text'</span>));
+  </div>
+  <div class="highlight">
+    <div class="highlight-title">🔑 Regla de oro: las API keys van SIEMPRE en el backend</div>
+    <div class="highlight-body">Nunca incluyas una API key en el código de la app móvil o en el JavaScript del frontend. Cualquiera puede extraerla. El backend actúa como proxy seguro: la app le pide al backend, y el backend llama a la API externa con la key secreta.</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 10: VISIÓN EMPRENDEDORA ══ -->
+<div class="slide slide-std" data-slide="10">
+  <div class="slide-eyebrow">Visión emprendedora</div>
+  <div class="slide-title">Del Producto a la Plataforma</div>
+  <div class="slide-subtitle">Un producto digital bien diseñado puede convertirse en una plataforma que soporta múltiples aplicaciones con el mismo backend.</div>
+  <div class="arch" style="flex-direction:column;gap:14px;padding:0;margin-bottom:18px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <div class="arch-box accent" style="min-width:110px;font-size:.75rem">📱 PrecioScan<br><small>Compras</small></div>
+      <div class="arch-box accent" style="min-width:110px;font-size:.75rem">🏥 ConsultaScan<br><small>Medicina</small></div>
+      <div class="arch-box accent" style="min-width:110px;font-size:.75rem">📦 AlmacénScan<br><small>Inventario</small></div>
+      <div class="arch-box accent" style="min-width:110px;font-size:.75rem">🔬 InvestiScan<br><small>Investigación</small></div>
+    </div>
+    <div class="arch-arrow" style="text-align:center">↓ todas comparten ↓</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <div class="arch-box verde">Backend Laravel SaaS</div>
+      <div class="arch-box verde">Auth + Suscripciones</div>
+      <div class="arch-box verde">Proxy APIs externas</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card card-amarillo">
+      <div class="card-title">💡 Modelos de monetización</div>
+      <div class="card-body">
+        <span class="badge badge-verde">Freemium</span> Gratis con límite, pago por más<br>
+        <span class="badge badge-azul">Suscripción</span> 1-5€/mes por app<br>
+        <span class="badge badge-amarillo">B2B</span> Licencia para empresas (50-500€/mes)<br>
+        <span class="badge badge-rojo">Ads</span> AdMob en versión gratuita<br>
+        <span class="badge badge-verde">White label</span> Vender la app con otra marca
+      </div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-title">📈 Escalabilidad del modelo</div>
+      <div class="card-body">
+        1 dev puede mantener 4-6 apps si comparten backend.<br>
+        El coste marginal de una nueva app es solo el desarrollo front.<br>
+        Con 100 usuarios por app · 4 apps · 1€/mes = <strong style="color:#93C5FD">400€/mes recurrentes</strong>.<br>
+        Con 1.000 usuarios = <strong style="color:#93C5FD">4.000€/mes</strong>.
+      </div>
+    </div>
+  </div>
+  <div class="ejemplo">
+    <div class="ejemplo-label">💼 Extrapolación de PrecioScan</div>
+    <div class="ejemplo-body">El mismo patrón (foto + GPS + datos + búsqueda + filtros) sirve para: inspección de obras, seguimiento de fauna, control de material sanitario, investigación de campo, catalogación de arte, auditorías de tiendas. <strong>La app cambia, la arquitectura es la misma.</strong></div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 11: CIERRE ══ -->
+<div class="slide slide-cierre" data-slide="11">
+  <div style="max-width:600px;text-align:center">
+    <div style="font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#34D399;margin-bottom:20px">Resumen</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;line-height:1.2;margin-bottom:24px;background:linear-gradient(135deg,#fff,#6EE7B7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+      Un buen producto digital<br>no es el que tiene más código.<br>Es el que resuelve un problema real.
+    </div>
+    <div class="timeline" style="text-align:left;max-width:420px;margin:0 auto 32px">
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot" style="background:#3B82F6;font-size:.7rem">1</div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-title">Investiga antes de programar</div><div class="tl-body">Valida la idea con usuarios reales. Un prototipo vale más que 1.000 líneas de código en la dirección equivocada.</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot" style="background:#059669;font-size:.7rem">2</div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-title">Elige las herramientas correctas</div><div class="tl-body">No la más moderna — la más adecuada para el problema, el equipo y el presupuesto.</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot" style="background:#F59E0B;font-size:.7rem">3</div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-title">Gestiona con rigor</div><div class="tl-body">Documenta, estima con margen, usa control de versiones desde el día 1, y testea antes de desplegar.</div></div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-left"><div class="tl-dot" style="background:#8B5CF6;font-size:.7rem">4</div><div class="tl-line"></div></div>
+        <div class="tl-content"><div class="tl-title">Despliega, mide y mejora</div><div class="tl-body">Un producto nunca está terminado. Los datos de uso son más valiosos que cualquier reunión de planificación.</div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <span class="badge badge-verde" style="font-size:.8rem;padding:6px 16px">.NET MAUI</span>
+      <span class="badge badge-azul" style="font-size:.8rem;padding:6px 16px">Laravel</span>
+      <span class="badge badge-amarillo" style="font-size:.8rem;padding:6px 16px">APIs externas</span>
+      <span class="badge badge-verde" style="font-size:.8rem;padding:6px 16px">SQLite · MySQL</span>
+      <span class="badge badge-azul" style="font-size:.8rem;padding:6px 16px">CI/CD</span>
+      <span class="badge badge-amarillo" style="font-size:.8rem;padding:6px 16px">SaaS</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 12: MONETIZACIÓN — MENTALIDAD ══ -->
+<div class="slide slide-std" data-slide="12">
+  <div class="slide-eyebrow">Monetización · Parte 1</div>
+  <div class="slide-title">De Proyecto a Negocio Digital</div>
+  <div class="slide-subtitle">Saber programar no es suficiente. Un producto digital que no genera ingresos es un hobby, no un negocio. La diferencia está en la mentalidad.</div>
+  <div class="grid-2">
+    <div class="comparison">
+      <div class="comp-col" style="border-color:rgba(239,68,68,0.3)">
+        <div class="comp-header" style="color:#FCA5A5">🎓 Mentalidad de proyecto</div>
+        <div class="comp-item">Lo hago porque me lo piden</div>
+        <div class="comp-item">El objetivo es que funcione</div>
+        <div class="comp-item">El cliente es el profesor o la empresa</div>
+        <div class="comp-item">Se entrega y se olvida</div>
+        <div class="comp-item">El coste es el tiempo invertido</div>
+        <div class="comp-item">No hay plan de continuidad</div>
+      </div>
+      <div class="comp-col" style="border-color:rgba(5,150,105,0.3)">
+        <div class="comp-header" style="color:#34D399">💼 Mentalidad de producto</div>
+        <div class="comp-item">Lo hago porque resuelve un problema</div>
+        <div class="comp-item">El objetivo es que lo usen y paguen</div>
+        <div class="comp-item">El cliente es el usuario final</div>
+        <div class="comp-item">Se lanza, se mide, se mejora</div>
+        <div class="comp-item">El coste es una inversión con retorno</div>
+        <div class="comp-item">Hay un plan de crecimiento</div>
+      </div>
+    </div>
+  </div>
+  <div class="highlight">
+    <div class="highlight-title">💡 La pregunta clave antes de empezar</div>
+    <div class="highlight-body">No es "¿puedo programar esto?" — eso ya lo sabes hacer. La pregunta es: <strong>¿alguien pagaría por esto?</strong> ¿Cuánto? ¿Por qué? ¿Con qué frecuencia? Responder esto antes de escribir código es lo que separa a un desarrollador de un emprendedor digital.</div>
+  </div>
+  <div class="grid-3" style="margin-top:4px">
+    <div class="card card-verde">
+      <div class="card-icon">💰</div>
+      <div class="card-title">Ingresos directos</div>
+      <div class="card-body">El usuario paga por usar el producto. Suscripción, pago único, pay-per-use.</div>
+    </div>
+    <div class="card card-accent">
+      <div class="card-icon">📣</div>
+      <div class="card-title">Ingresos indirectos</div>
+      <div class="card-body">El producto es gratis, pero monetizas con publicidad, datos anonimizados o afiliación.</div>
+    </div>
+    <div class="card card-amarillo">
+      <div class="card-icon">🏢</div>
+      <div class="card-title">Ingresos B2B</div>
+      <div class="card-body">Vendes el producto o el desarrollo a empresas, no a usuarios individuales.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 13: MODELOS DE MONETIZACIÓN ══ -->
+<div class="slide slide-std" data-slide="13">
+  <div class="slide-eyebrow">Monetización · Parte 2</div>
+  <div class="slide-title">Modelos de Monetización</div>
+  <div class="slide-subtitle">Cada modelo tiene ventajas, riesgos y casos de uso distintos. La elección correcta depende del producto, el usuario y el mercado.</div>
+  <table class="tabla">
+    <thead>
+      <tr><th>Modelo</th><th>Cómo funciona</th><th>Ventaja</th><th>Riesgo</th><th>Ejemplo real</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-verde">Freemium</span></td>
+        <td>Gratis con límite, pago para desbloquear</td>
+        <td>Fácil adquisición de usuarios</td>
+        <td>Pocos convierten a pago (2-5%)</td>
+        <td>Spotify, Dropbox, Canva</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-azul">Suscripción</span></td>
+        <td>Pago mensual o anual recurrente</td>
+        <td>Ingresos predecibles</td>
+        <td>Churn (abandono)</td>
+        <td>Netflix, GitHub, Notion</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-amarillo">Pago único</span></td>
+        <td>Se compra una vez, se usa siempre</td>
+        <td>Sin fricción de renovación</td>
+        <td>Sin ingresos recurrentes</td>
+        <td>Apps de escritorio, juegos</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-rojo">Publicidad</span></td>
+        <td>App gratis, ingresos por anuncios</td>
+        <td>Máxima adopción</td>
+        <td>Necesita millones de usuarios</td>
+        <td>Instagram, apps de noticias</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-verde">Pay-per-use</span></td>
+        <td>Pagas solo lo que consumes</td>
+        <td>Baja barrera de entrada</td>
+        <td>Ingresos variables</td>
+        <td>AWS, APIs, Twilio</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-azul">B2B / Licencia</span></td>
+        <td>Venta a empresas con contrato</td>
+        <td>Tickets altos (500-5000€/mes)</td>
+        <td>Ciclo de venta largo</td>
+        <td>Salesforce, SAP, Jira</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-amarillo">Afiliación</span></td>
+        <td>Comisión por referir ventas de terceros</td>
+        <td>Sin producto propio</td>
+        <td>Depende de terceros</td>
+        <td>Blogs, comparadores</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-rojo">White Label</span></td>
+        <td>Otra empresa vende tu producto con su marca</td>
+        <td>Volumen sin marketing</td>
+        <td>Pierdes visibilidad</td>
+        <td>Software para franquicias</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="ejemplo">
+    <div class="ejemplo-label">📱 PrecioScan — Modelo recomendado</div>
+    <div class="ejemplo-body"><strong>Freemium:</strong> hasta 100 fotos gratis. <strong>Pro 1,99€/mes:</strong> ilimitado + OCR automático + sync nube. <strong>B2B:</strong> licencia para cadenas de supermercados que quieran analizar precios de competencia.</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 14: PLATAFORMAS DE DISTRIBUCIÓN ══ -->
+<div class="slide slide-std" data-slide="14">
+  <div class="slide-eyebrow">Monetización · Parte 3</div>
+  <div class="slide-title">Plataformas de Distribución</div>
+  <div class="slide-subtitle">No basta con hacer la app — hay que llevarla a donde está el usuario. Cada plataforma tiene sus reglas, sus costes y su audiencia.</div>
+  <div class="grid-2">
+    <div class="card card-verde" style="margin-bottom:12px">
+      <div class="card-icon">🤖</div>
+      <div class="card-title">Google Play Store</div>
+      <div class="card-body">
+        <strong style="color:#34D399">Coste:</strong> 25$ registro único · 15-30% comisión<br>
+        <strong style="color:#34D399">Review:</strong> 1-3 días (automatizada + humana)<br>
+        <strong style="color:#34D399">Usuarios:</strong> 3.000 millones de dispositivos Android<br>
+        <strong style="color:#34D399">Pagos:</strong> Google Play Billing obligatorio para apps de pago<br>
+        <strong style="color:#34D399">Herramienta:</strong> Google Play Console — estadísticas, reviews, A/B test
+      </div>
+    </div>
+    <div class="card card-accent" style="margin-bottom:12px">
+      <div class="card-icon">🍎</div>
+      <div class="card-title">Apple App Store</div>
+      <div class="card-body">
+        <strong style="color:#93C5FD">Coste:</strong> 99€/año · 15-30% comisión<br>
+        <strong style="color:#93C5FD">Review:</strong> 1-7 días (más estricta que Google)<br>
+        <strong style="color:#93C5FD">Usuarios:</strong> iOS tiene mayor poder adquisitivo medio<br>
+        <strong style="color:#93C5FD">Pagos:</strong> In-App Purchase de Apple obligatorio<br>
+        <strong style="color:#93C5FD">Herramienta:</strong> App Store Connect — métricas, TestFlight
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-icon">🌐</div>
+      <div class="card-title">Web / PWA</div>
+      <div class="card-body">
+        <strong>Sin comisión</strong> de plataforma — cobras tú directamente con Stripe.<br>
+        Accesible desde cualquier dispositivo sin instalación.<br>
+        SEO: apareces en Google si tienes buena landing page.<br>
+        PWA: se puede "instalar" en el móvil desde el navegador.
+      </div>
+    </div>
+    <div class="card card-amarillo">
+      <div class="card-icon">🏪</div>
+      <div class="card-title">Marketplaces de software</div>
+      <div class="card-body">
+        <strong style="color:#FCD34D">Gumroad</strong> — venta directa de apps/plugins/templates<br>
+        <strong style="color:#FCD34D">Paddle</strong> — gestiona IVA internacional automáticamente<br>
+        <strong style="color:#FCD34D">AppSumo</strong> — deals para startups, mucha visibilidad<br>
+        <strong style="color:#FCD34D">ProductHunt</strong> — lanzamiento y comunidad tech
+      </div>
+    </div>
+  </div>
+  <div class="highlight">
+    <div class="highlight-title">⚖️ La regla del 30% — el gran debate</div>
+    <div class="highlight-body">Google y Apple cobran un 30% de cada compra dentro de la app. Para suscripciones anuales baja al 15% a partir del segundo año. Por eso muchas apps redirigen al usuario a pagar en su web propia (sin comisión) y luego acceder desde la app. Esto es legal pero con restricciones — no puedes poner el enlace de pago dentro de la app en iOS.</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 15: PORTALES Y COMUNIDADES ══ -->
+<div class="slide slide-std" data-slide="15">
+  <div class="slide-eyebrow">Monetización · Parte 4</div>
+  <div class="slide-title">Portales, Comunidades y Visibilidad</div>
+  <div class="slide-subtitle">Un buen producto sin visibilidad no vende. Hay que estar donde está la audiencia antes del lanzamiento, durante y después.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-accent" style="margin-bottom:12px">
+        <div class="card-title">🚀 Lanzamiento — dónde publicar</div>
+        <div class="card-body">
+          <span class="badge badge-azul">ProductHunt</span> El nº1 para lanzar productos tech. Un buen lanzamiento = 500-5000 usuarios en 24h.<br><br>
+          <span class="badge badge-azul">Hacker News</span> "Show HN: [tu producto]" — audiencia técnica, muy crítica pero valiosa.<br><br>
+          <span class="badge badge-verde">Reddit</span> Subreddits específicos: r/androidapps, r/SideProject, r/indiegaming...<br><br>
+          <span class="badge badge-amarillo">Twitter/X</span> Hilo de construcción del producto (#buildinpublic). Genera comunidad antes del lanzamiento.
+        </div>
+      </div>
+      <div class="card card-verde">
+        <div class="card-title">💼 Para apps B2B — dónde vender</div>
+        <div class="card-body">
+          <span class="badge badge-verde">LinkedIn</span> Publicaciones, grupos de sector, contacto directo con decisores.<br><br>
+          <span class="badge badge-verde">G2 / Capterra</span> Marketplaces de software empresarial — los compradores B2B buscan aquí.<br><br>
+          <span class="badge badge-azul">AWS / Azure Marketplace</span> Si tu app corre en la nube, listarse aquí da acceso a millones de empresas.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-title">📢 Marketing de contenidos</div>
+        <div class="card-body">
+          <strong style="color:#93C5FD">Blog técnico</strong> — artículos sobre el problema que resuelves. Posicionamiento SEO orgánico.<br><br>
+          <strong style="color:#93C5FD">YouTube / TikTok</strong> — demos en vídeo, tutoriales, casos de uso reales.<br><br>
+          <strong style="color:#93C5FD">Newsletter</strong> — lista de emails propia, el activo más valioso a largo plazo. Herramientas: Resend, Mailchimp.<br><br>
+          <strong style="color:#93C5FD">GitHub</strong> — si es open source o tienes partes públicas, la comunidad dev puede ser tu mayor canal.
+        </div>
+      </div>
+      <div class="card card-amarillo">
+        <div class="card-title">🇪🇸 Plataformas españolas</div>
+        <div class="card-body">
+          <span class="badge badge-amarillo">Domestika</span> Para cursos y productos creativos/digitales.<br>
+          <span class="badge badge-amarillo">Lanzadera</span> Aceleradora de startups (Valencia). Mentoring + financiación.<br>
+          <span class="badge badge-amarillo">Wayra</span> Aceleradora de Telefónica. Europa + Latam.<br>
+          <span class="badge badge-verde">ENISA</span> Préstamos blandos para startups tecnológicas españolas.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 16: INGRESOS PASIVOS VS ACTIVOS ══ -->
+<div class="slide slide-std" data-slide="16">
+  <div class="slide-eyebrow">Monetización · Parte 5</div>
+  <div class="slide-title">Ingresos Pasivos vs Activos</div>
+  <div class="slide-subtitle">No todos los modelos de negocio escalan igual. Entender esta diferencia es clave para construir un negocio sostenible.</div>
+  <div class="comparison" style="margin-bottom:16px">
+    <div class="comp-col" style="border-color:rgba(245,158,11,0.3)">
+      <div class="comp-header" style="color:#FCD34D">⚡ Ingresos Activos</div>
+      <div class="comp-item">Desarrollo a medida para clientes</div>
+      <div class="comp-item">Consultoría y formación</div>
+      <div class="comp-item">Freelance por proyecto</div>
+      <div class="comp-item">Mantenimiento de apps de terceros</div>
+      <div class="comp-item"><strong>Si dejas de trabajar, dejan de entrar</strong></div>
+      <div class="comp-item">Más fácil de empezar</div>
+      <div class="comp-item">Techo de ingresos = tus horas</div>
+    </div>
+    <div class="comp-col" style="border-color:rgba(5,150,105,0.3)">
+      <div class="comp-header" style="color:#34D399">🌊 Ingresos Pasivos / Recurrentes</div>
+      <div class="comp-item">Suscripciones a tu SaaS</div>
+      <div class="comp-item">Ventas de tu app en stores</div>
+      <div class="comp-item">Publicidad en tu app</div>
+      <div class="comp-item">Licencias de software</div>
+      <div class="comp-item"><strong>Entran aunque estés durmiendo</strong></div>
+      <div class="comp-item">Más difícil de construir</div>
+      <div class="comp-item">Sin techo de ingresos</div>
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot" style="background:#F59E0B;font-size:.65rem">Año 1</div><div class="tl-line"></div></div>
+      <div class="tl-content"><div class="tl-title">Activos primero — valida con clientes reales</div><div class="tl-body">Proyectos freelance para pagar las facturas mientras construyes tu producto. Cada proyecto enseña qué necesitan realmente los usuarios.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot" style="background:#3B82F6;font-size:.65rem">Año 2</div><div class="tl-line"></div></div>
+      <div class="tl-content"><div class="tl-title">Lanza el MVP de tu producto propio</div><div class="tl-body">Con lo aprendido en los proyectos de clientes, construyes algo que puedes vender a muchos. Primeros ingresos recurrentes, aunque sean 50€/mes.</div></div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-left"><div class="tl-dot" style="background:#059669;font-size:.65rem">Año 3+</div></div>
+      <div class="tl-content"><div class="tl-title">Escalar los recurrentes, reducir los activos</div><div class="tl-body">Cuando los ingresos recurrentes cubren gastos fijos, puedes elegir los proyectos de clientes que quieras, o dejar de hacerlos.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 17: HOJA DE RUTA REAL ══ -->
+<div class="slide slide-std" data-slide="17">
+  <div class="slide-eyebrow">Monetización · Parte 6</div>
+  <div class="slide-title">Hoja de Ruta: de 0€ a Ingresos Recurrentes</div>
+  <div class="slide-subtitle">Un plan realista paso a paso. No hay atajos, pero sí una secuencia que minimiza el riesgo y maximiza el aprendizaje.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-accent" style="margin-bottom:10px">
+        <div class="card-title">📋 Paso 1 — Valida la idea (semana 1-2)</div>
+        <div class="card-body">
+          Habla con 10 posibles usuarios. No preguntes si usarían la app — pregunta cómo resuelven hoy el problema.<br>
+          Crea una landing page en <strong>Carrd.co</strong> o <strong>Framer</strong> (gratis) con botón "Únete a la lista de espera".<br>
+          Si consigues 50 emails: la idea tiene tracción. Si no: pivota.
+        </div>
+      </div>
+      <div class="card card-verde" style="margin-bottom:10px">
+        <div class="card-title">🔨 Paso 2 — Construye el MVP (mes 1-3)</div>
+        <div class="card-body">
+          Solo las funcionalidades imprescindibles. En PrecioScan: foto + GPS + precio + listado.<br>
+          Sin backend, sin nube, sin OCR. Eso viene después.<br>
+          <strong>Regla:</strong> si no duele cortar una feature, córtala.
+        </div>
+      </div>
+      <div class="card card-amarillo" style="margin-bottom:10px">
+        <div class="card-title">🚀 Paso 3 — Lanza y mide (mes 3-4)</div>
+        <div class="card-body">
+          Publica en Google Play (APK o Store). Lanza en ProductHunt, Reddit y Twitter.<br>
+          Instala <strong>Firebase Analytics</strong> (gratis) para saber cómo usan la app.<br>
+          <strong>Métrica clave:</strong> ¿Cuántos vuelven al día siguiente?
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">💳 Paso 4 — Activa pagos (mes 4-6)</div>
+        <div class="card-body">
+          Añade el modelo freemium con Google Play Billing o Stripe (web).<br>
+          Precio inicial conservador: 0,99€ - 1,99€/mes.<br>
+          <strong>Con 100 suscriptores a 1,99€ = 199€/mes recurrentes.</strong><br>
+          No es mucho, pero es la prueba de que alguien paga.
+        </div>
+      </div>
+      <div class="card card-rojo" style="margin-bottom:10px">
+        <div class="card-title">📈 Paso 5 — Crece (mes 6+)</div>
+        <div class="card-body">
+          Añade las features que piden los usuarios que ya pagan.<br>
+          Lanza en App Store (iOS) para doblar el mercado.<br>
+          Busca el canal de adquisición que mejor convierte:<br>
+          SEO, anuncios, partnerships, afiliados.<br>
+          <strong>500 suscriptores = 995€/mes. 2.000 = 3.980€/mes.</strong>
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">🏢 Paso 6 — Versión B2B (año 2)</div>
+        <div class="card-body">
+          Ofrece la app a empresas con funciones premium: multi-usuario, panel de gestión, API, integración con sus sistemas.<br>
+          Precio B2B: 50-500€/mes por empresa.<br>
+          <strong>10 empresas a 100€/mes = 1.000€/mes extra.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 18: ERRORES MÁS COMUNES ══ -->
+<div class="slide slide-std" data-slide="18">
+  <div class="slide-eyebrow">Monetización · Parte 7</div>
+  <div class="slide-title">Los 8 Errores que Hunden un Producto Digital</div>
+  <div class="slide-subtitle">Lo que nadie te cuenta en clase. Estos errores no son de código — son de estrategia. Y son los más caros.</div>
+  <div class="grid-2">
+    <div class="card card-rojo" style="margin-bottom:10px">
+      <div class="card-title">❌ Error 1 — Construir sin validar</div>
+      <div class="card-body">6 meses programando algo que nadie necesita. Solución: habla con usuarios antes de escribir código.</div>
+    </div>
+    <div class="card card-rojo" style="margin-bottom:10px">
+      <div class="card-title">❌ Error 2 — Esperar a que esté "perfecto"</div>
+      <div class="card-body">"Lo lanzo cuando esté listo." Resultado: nunca se lanza. Un MVP imperfecto publicado vale más que una obra maestra en el cajón.</div>
+    </div>
+    <div class="card card-rojo" style="margin-bottom:10px">
+      <div class="card-title">❌ Error 3 — No cobrar desde el principio</div>
+      <div class="card-body">"Ahora es gratis, luego cobraré." Los usuarios gratuitos raramente convierten. Es mucho más difícil cobrar a alguien que ya usaba gratis.</div>
+    </div>
+    <div class="card card-rojo" style="margin-bottom:10px">
+      <div class="card-title">❌ Error 4 — Ignorar la retención</div>
+      <div class="card-body">Obsesionarse con descargas en lugar de con usuarios que vuelven. 10.000 descargas sin retención = 0 negocio.</div>
+    </div>
+    <div class="card card-amarillo" style="margin-bottom:10px">
+      <div class="card-title">⚠️ Error 5 — Competir solo por precio</div>
+      <div class="card-body">Bajar el precio para conseguir usuarios destruye el margen. Compite por valor, no por precio.</div>
+    </div>
+    <div class="card card-amarillo" style="margin-bottom:10px">
+      <div class="card-title">⚠️ Error 6 — No tener un canal de adquisición</div>
+      <div class="card-body">"La app es tan buena que se vende sola." No existe. Necesitas un canal: SEO, anuncios, comunidad, partnerships o ventas directas.</div>
+    </div>
+    <div class="card card-amarillo" style="margin-bottom:10px">
+      <div class="card-title">⚠️ Error 7 — Olvidar los aspectos legales</div>
+      <div class="card-body">Política de privacidad, RGPD, términos de uso, IVA digital europeo. Son obligatorios y evitan multas graves.</div>
+    </div>
+    <div class="card card-accent" style="margin-bottom:10px">
+      <div class="card-title">💡 Error 8 — Trabajar solo sin red</div>
+      <div class="card-body">Comunidades como IndieHackers, MicroConf o grupos de Telegram/Discord de desarrolladores indie son fuente de feedback, motivación y primeros clientes.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 19: CONTROL DE DESARROLLOS — BASE DE DATOS ══ -->
+<div class="slide slide-std" data-slide="19">
+  <div class="slide-eyebrow">Gestión · Parte 1</div>
+  <div class="slide-title">Control de Desarrollos: Qué Guardar en la BD</div>
+  <div class="slide-subtitle">Un sistema de gestión propio permite saber en todo momento el estado, coste y rentabilidad de cada producto digital que desarrollas o mantienes.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-accent" style="margin-bottom:10px">
+        <div class="card-title">🗄️ Tabla: proyectos</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.72rem">
+<span class="n">id, nombre, descripcion</span><br>
+<span class="n">tipo</span> <span class="c">-- web/movil/escritorio/api</span><br>
+<span class="n">estado</span> <span class="c">-- idea/desarrollo/produccion/pausado/fin</span><br>
+<span class="n">fecha_inicio, fecha_entrega_estimada</span><br>
+<span class="n">fecha_entrega_real</span><br>
+<span class="n">version_actual</span> <span class="c">-- "2.3.1"</span><br>
+<span class="n">repositorio_url</span><br>
+<span class="n">url_produccion</span><br>
+<span class="n">cliente_id, responsable_id</span><br>
+<span class="n">presupuesto_estimado, coste_real</span><br>
+<span class="n">ingresos_acumulados</span><br>
+<span class="n">tecnologias</span> <span class="c">-- JSON ["MAUI","Laravel"]</span><br>
+<span class="n">notas</span>
+          </div>
+        </div>
+      </div>
+      <div class="card card-verde" style="margin-bottom:10px">
+        <div class="card-title">🗄️ Tabla: versiones</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.72rem">
+<span class="n">id, proyecto_id</span><br>
+<span class="n">version</span> <span class="c">-- "2.3.1" (semver)</span><br>
+<span class="n">fecha_lanzamiento</span><br>
+<span class="n">tipo</span> <span class="c">-- mayor/menor/parche/hotfix</span><br>
+<span class="n">changelog</span> <span class="c">-- texto con cambios</span><br>
+<span class="n">desarrollador_id</span><br>
+<span class="n">horas_desarrollo</span><br>
+<span class="n">estado</span> <span class="c">-- dev/test/staging/produccion</span><br>
+<span class="n">plataforma</span> <span class="c">-- android/ios/web/todos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">🗄️ Tabla: tareas / sprints</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.72rem">
+<span class="n">id, proyecto_id, version_id</span><br>
+<span class="n">titulo, descripcion</span><br>
+<span class="n">tipo</span> <span class="c">-- feature/bug/mejora/seguridad</span><br>
+<span class="n">prioridad</span> <span class="c">-- critica/alta/media/baja</span><br>
+<span class="n">estado</span> <span class="c">-- pendiente/en_curso/revision/hecho</span><br>
+<span class="n">asignado_a</span> <span class="c">-- persona_id</span><br>
+<span class="n">horas_estimadas, horas_reales</span><br>
+<span class="n">fecha_inicio, fecha_fin</span><br>
+<span class="n">coste_estimado</span>
+          </div>
+        </div>
+      </div>
+      <div class="card card-amarillo">
+        <div class="card-title">🗄️ Tablas de soporte</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.72rem">
+<span class="c">-- Incidencias y bugs en producción</span><br>
+<span class="n">bugs</span>: id, proyecto_id, version_id,<br>
+&nbsp;&nbsp;severidad, descripcion, estado,<br>
+&nbsp;&nbsp;fecha_reporte, fecha_resolucion<br><br>
+<span class="c">-- Mantenimientos programados</span><br>
+<span class="n">mantenimientos</span>: id, proyecto_id,<br>
+&nbsp;&nbsp;tipo, fecha_programada,<br>
+&nbsp;&nbsp;fecha_realizacion, responsable_id,<br>
+&nbsp;&nbsp;resultado, proxima_revision<br><br>
+<span class="c">-- Dependencias y licencias</span><br>
+<span class="n">dependencias</span>: id, proyecto_id,<br>
+&nbsp;&nbsp;nombre, version, licencia,<br>
+&nbsp;&nbsp;fecha_caducidad, url
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 20: PERSONAL Y TRAZABILIDAD ══ -->
+<div class="slide slide-std" data-slide="20">
+  <div class="slide-eyebrow">Gestión · Parte 2</div>
+  <div class="slide-title">Personal, Roles y Trazabilidad</div>
+  <div class="slide-subtitle">Saber quién hizo qué, cuándo y cuánto costó es imprescindible para facturar correctamente, resolver conflictos y mejorar estimaciones futuras.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-accent" style="margin-bottom:10px">
+        <div class="card-title">🗄️ Tabla: personas / equipo</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.72rem">
+<span class="n">id, nombre, email</span><br>
+<span class="n">rol</span> <span class="c">-- dev/diseñador/qa/devops/pm</span><br>
+<span class="n">tipo_contrato</span> <span class="c">-- empleado/freelance/proveedor</span><br>
+<span class="n">coste_hora</span> <span class="c">-- €/hora facturado</span><br>
+<span class="n">disponibilidad</span> <span class="c">-- horas/semana</span><br>
+<span class="n">especialidades</span> <span class="c">-- JSON ["MAUI","Laravel"]</span><br>
+<span class="n">fecha_alta, fecha_baja</span><br>
+<span class="n">nif_nie, datos_pago</span>
+          </div>
+        </div>
+      </div>
+      <div class="card card-verde" style="margin-bottom:10px">
+        <div class="card-title">🗄️ Tabla: imputaciones de tiempo</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.72rem">
+<span class="n">id, persona_id, tarea_id</span><br>
+<span class="n">proyecto_id, fecha</span><br>
+<span class="n">horas</span><br>
+<span class="n">descripcion_trabajo</span><br>
+<span class="n">facturable</span> <span class="c">-- boolean</span><br>
+<span class="n">coste_calculado</span> <span class="c">-- horas × coste_hora</span><br>
+<span class="n">factura_id</span> <span class="c">-- si ya fue facturado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">📊 KPIs de equipo a medir</div>
+        <div class="card-body">
+          <strong style="color:#93C5FD">Velocidad de entrega</strong> — horas estimadas vs reales por sprint<br><br>
+          <strong style="color:#93C5FD">Tasa de bugs por dev</strong> — calidad del código por persona<br><br>
+          <strong style="color:#93C5FD">Coste por feature</strong> — rentabilidad de cada funcionalidad<br><br>
+          <strong style="color:#93C5FD">Tiempo medio de resolución</strong> de bugs críticos (MTTR)<br><br>
+          <strong style="color:#93C5FD">Ratio estimación/realidad</strong> — mejora la precisión con el tiempo
+        </div>
+      </div>
+      <div class="card card-amarillo">
+        <div class="card-title">🗄️ Tabla: ingresos y gastos por proyecto</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.72rem">
+<span class="n">id, proyecto_id, fecha</span><br>
+<span class="n">tipo</span> <span class="c">-- ingreso/gasto</span><br>
+<span class="n">categoria</span> <span class="c">-- personal/infraestructura/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">apis/licencias/marketing</span><br>
+<span class="n">concepto, importe, iva</span><br>
+<span class="n">proveedor_cliente</span><br>
+<span class="n">factura_numero</span><br>
+<span class="n">pagado</span> <span class="c">-- boolean + fecha_pago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ejemplo">
+    <div class="ejemplo-label">📱 PrecioScan — Control real</div>
+    <div class="ejemplo-body">Proyecto_id: 1 · Estado: producción · Versión: 1.2.0 · Horas totales: 340h · Coste desarrollo: 4.250€ · Ingresos acumulados: 0€ (MVP gratuito) · Próxima revisión: 15/07/2025 · Dependencias a revisar: SQLite-net-pcl (caduca licencia v3 en dic/2025)</div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 21: FISCALIDAD AUTÓNOMO ══ -->
+<div class="slide slide-std" data-slide="21">
+  <div class="slide-eyebrow">Fiscalidad · Parte 1</div>
+  <div class="slide-title">Tributación como Autónomo en España</div>
+  <div class="slide-subtitle">Si desarrollas y vendes productos digitales como persona física, eres autónomo. Conocer tus obligaciones fiscales desde el principio evita sustos con Hacienda.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-accent" style="margin-bottom:10px">
+        <div class="card-title">📋 Alta y obligaciones</div>
+        <div class="card-body">
+          <span class="badge badge-azul">Alta RETA</span> Seguridad Social de autónomos. Cuota mínima: ~230€/mes (2024, base mínima).<br><br>
+          <span class="badge badge-azul">Alta censal</span> Modelo 036/037 en Hacienda. Epígrafe IAE: 763 (programación informática) o 762 (consultoría).<br><br>
+          <span class="badge badge-verde">Tarifa plana</span> 80€/mes los primeros 12 meses si es tu primer alta como autónomo.
+        </div>
+      </div>
+      <div class="card card-verde" style="margin-bottom:10px">
+        <div class="card-title">💸 IVA — Impuesto sobre el Valor Añadido</div>
+        <div class="card-body">
+          Tipo general: <strong>21%</strong> en servicios digitales en España.<br><br>
+          <span class="badge badge-amarillo">Modelo 303</span> Declaración trimestral (abril, julio, octubre, enero).<br><br>
+          <span class="badge badge-amarillo">Modelo 390</span> Resumen anual de IVA (enero del año siguiente).<br><br>
+          <strong>IVA intracomunitario:</strong> si vendes a otros países de la UE, usa el sistema <strong>OSS (One Stop Shop)</strong> para no registrarte en cada país.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-amarillo" style="margin-bottom:10px">
+        <div class="card-title">💶 IRPF — Impuesto sobre la Renta</div>
+        <div class="card-body">
+          <span class="badge badge-amarillo">Modelo 130</span> Pago fraccionado trimestral: 20% del beneficio neto cada trimestre.<br><br>
+          <span class="badge badge-amarillo">Modelo 100</span> Declaración anual de la Renta (mayo-junio).<br><br>
+          Tramos IRPF 2024 (beneficio neto):<br>
+          · Hasta 12.450€ → 19%<br>
+          · 12.450 - 20.200€ → 24%<br>
+          · 20.200 - 35.200€ → 30%<br>
+          · 35.200 - 60.000€ → 37%<br>
+          · Más de 60.000€ → 45-47%
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📁 Gastos deducibles</div>
+        <div class="card-body">
+          ✅ Equipos informáticos (amortización)<br>
+          ✅ Software, licencias, suscripciones (VS, GitHub...)<br>
+          ✅ Hosting, dominios, APIs de pago<br>
+          ✅ Formación relacionada con la actividad<br>
+          ✅ Parte proporcional del ADSL/móvil<br>
+          ✅ Gestoría y asesoría fiscal<br>
+          ✅ Publicidad y marketing digital<br>
+          ⚠️ Guardar <strong>todas las facturas</strong> — sin factura no hay deducción
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 22: FISCALIDAD EMPRESA (SL) ══ -->
+<div class="slide slide-std" data-slide="22">
+  <div class="slide-eyebrow">Fiscalidad · Parte 2</div>
+  <div class="slide-title">Tributación como Empresa (SL) en España y Europa</div>
+  <div class="slide-subtitle">Cuando los ingresos superan ~40.000€/año o quieres socios, una Sociedad Limitada (SL) ofrece ventajas fiscales y protege tu patrimonio personal.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-accent" style="margin-bottom:10px">
+        <div class="card-title">🏢 Constitución de una SL</div>
+        <div class="card-body">
+          Capital mínimo: <strong>1€</strong> (reforma 2023, antes 3.000€).<br>
+          Coste de constitución: ~500-1.000€ (notario + registro).<br>
+          Tiempo: 5-15 días hábiles.<br><br>
+          <span class="badge badge-verde">Alternativa rápida</span> SL Express: 24-48h a través del CIRCE (Centro de Información y Red de Creación de Empresas) de forma telemática y gratuita.
+        </div>
+      </div>
+      <div class="card card-verde" style="margin-bottom:10px">
+        <div class="card-title">💶 Impuesto de Sociedades (IS)</div>
+        <div class="card-body">
+          <span class="badge badge-amarillo">Modelo 200</span> Declaración anual (6 meses tras cierre del ejercicio).<br><br>
+          <span class="badge badge-amarillo">Modelo 202</span> Pagos fraccionados (abril, octubre, diciembre).<br><br>
+          Tipos:<br>
+          · <strong>23%</strong> tipo general<br>
+          · <strong>15%</strong> primeros 2 años para empresas nuevas<br>
+          · <strong>15%</strong> empresas con &lt;1M€ de facturación<br><br>
+          <span class="badge badge-verde">Ventaja clave</span> Puedes reinvertir beneficios en la empresa antes de tributar.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">🌍 IVA digital europeo — OSS</div>
+        <div class="card-body">
+          Si vendes apps o SaaS a consumidores de otros países de la UE, debes aplicar el IVA del país del comprador.<br><br>
+          <span class="badge badge-azul">OSS (One Stop Shop)</span> Te registras una sola vez en la AEAT española y declaras todo el IVA europeo en un único modelo trimestral (<strong>Modelo 369</strong>).<br><br>
+          Umbrales: si ventas intraUE &gt; 10.000€/año → obligatorio registrarse en OSS.
+        </div>
+      </div>
+      <div class="card card-amarillo">
+        <div class="card-title">📊 Autónomo vs SL — ¿cuándo cambia?</div>
+        <div class="card-body">
+          <table style="width:100%;font-size:.75rem;border-collapse:collapse">
+            <tr style="color:#FCD34D"><td><strong>Beneficio neto</strong></td><td><strong>Autónomo</strong></td><td><strong>SL</strong></td></tr>
+            <tr style="color:#CBD5E1"><td>20.000€/año</td><td>~5.400€ IRPF</td><td>~3.000€ IS</td></tr>
+            <tr style="color:#CBD5E1"><td>40.000€/año</td><td>~14.000€ IRPF</td><td>~6.000€ IS</td></tr>
+            <tr style="color:#CBD5E1"><td>60.000€/año</td><td>~22.000€ IRPF</td><td>~9.000€ IS</td></tr>
+          </table>
+          <br><span style="font-size:.75rem;color:#94A3B8">* Estimaciones orientativas. Consulta siempre a un gestor.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 23: LEGALIDAD ══ -->
+<div class="slide slide-std" data-slide="23">
+  <div class="slide-eyebrow">Legal</div>
+  <div class="slide-title">Cómo Hacer que tu Producto Digital sea Legal</div>
+  <div class="slide-subtitle">La legalidad no es opcional — una app que maneja datos de usuarios está sujeta a leyes europeas con multas de hasta el 4% de la facturación anual.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-rojo" style="margin-bottom:10px">
+        <div class="card-title">🔒 RGPD — Reglamento General de Protección de Datos</div>
+        <div class="card-body">
+          Obligatorio en toda la UE desde 2018.<br><br>
+          <strong>Lo que debes tener:</strong><br>
+          ✅ Política de privacidad clara y accesible<br>
+          ✅ Consentimiento explícito para recoger datos<br>
+          ✅ Derecho al olvido (borrar datos del usuario)<br>
+          ✅ Registro de actividades de tratamiento<br>
+          ✅ Aviso de cookies si tienes web<br><br>
+          <span class="badge badge-rojo">Multa máxima</span> 20 millones € o 4% facturación global
+        </div>
+      </div>
+      <div class="card card-accent" style="margin-bottom:10px">
+        <div class="card-title">📄 Documentos legales obligatorios</div>
+        <div class="card-body">
+          <strong style="color:#93C5FD">Política de Privacidad</strong> — qué datos recoges, para qué, quién los trata, cuánto tiempo se guardan.<br><br>
+          <strong style="color:#93C5FD">Términos y Condiciones</strong> — reglas de uso, limitaciones de responsabilidad, ley aplicable.<br><br>
+          <strong style="color:#93C5FD">Política de Cookies</strong> — si tienes web. Obligatoria por la LSSI.<br><br>
+          <strong style="color:#93C5FD">Aviso Legal</strong> — datos del responsable (nombre, CIF, dirección, email).
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-verde" style="margin-bottom:10px">
+        <div class="card-title">⚖️ Licencias de software</div>
+        <div class="card-body">
+          <span class="badge badge-verde">MIT</span> Libre uso, modificación y distribución. Solo exige mantener el copyright.<br><br>
+          <span class="badge badge-azul">Apache 2.0</span> Como MIT pero con protección de patentes.<br><br>
+          <span class="badge badge-amarillo">GPL</span> Si usas código GPL, tu app también debe ser GPL (open source obligatorio).<br><br>
+          <span class="badge badge-rojo">Propietaria</span> Código cerrado, todos los derechos reservados.<br><br>
+          <strong>⚠️ Revisa las licencias de cada NuGet/npm que uses.</strong> Algunas prohíben uso comercial.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🏷️ Propiedad intelectual</div>
+        <div class="card-body">
+          El código que creas es tuyo por defecto (derecho de autor en España).<br><br>
+          Si trabajas para una empresa: el código pertenece a la empresa salvo pacto contrario.<br><br>
+          <strong>Registrar la marca</strong> (nombre + logo) en la OEPM: ~150€. Recomendable antes de lanzar públicamente.<br><br>
+          <strong>NDA (acuerdo de confidencialidad)</strong>: firma siempre uno antes de mostrar tu idea a terceros.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 24: CALENDARIO DE OBLIGACIONES ══ -->
+<div class="slide slide-std" data-slide="24">
+  <div class="slide-eyebrow">Gestión · Parte 3</div>
+  <div class="slide-title">Calendario de Obligaciones y Revisiones</div>
+  <div class="slide-subtitle">Las fechas no esperan — ni las de Hacienda ni las de tus aplicaciones en producción. Un calendario unificado evita multas y caídas inesperadas.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-rojo" style="margin-bottom:10px">
+        <div class="card-title">📅 Calendario fiscal anual (autónomo/SL)</div>
+        <div class="card-body">
+          <table style="width:100%;font-size:.75rem;border-collapse:collapse">
+            <tr style="color:#FCA5A5;border-bottom:1px solid rgba(255,255,255,0.08)"><td><strong>Mes</strong></td><td><strong>Modelo</strong></td><td><strong>Qué es</strong></td></tr>
+            <tr style="color:#CBD5E1"><td>Enero</td><td>390, 180, 190</td><td>Resúmenes anuales</td></tr>
+            <tr style="color:#CBD5E1"><td>Abril</td><td>303, 130/202</td><td>IVA + IRPF/IS T1</td></tr>
+            <tr style="color:#CBD5E1"><td>Mayo-Jun</td><td>100/200</td><td>Renta / Sociedades</td></tr>
+            <tr style="color:#CBD5E1"><td>Julio</td><td>303, 130/202</td><td>IVA + IRPF/IS T2</td></tr>
+            <tr style="color:#CBD5E1"><td>Octubre</td><td>303, 130/202</td><td>IVA + IRPF/IS T3</td></tr>
+            <tr style="color:#CBD5E1"><td>Diciembre</td><td>202</td><td>Pago fraccionado IS</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card card-amarillo">
+        <div class="card-title">🔄 Revisiones de mantenimiento</div>
+        <div class="card-body">
+          <span class="badge badge-verde">Diario</span> Monitorización uptime (UptimeRobot, gratis)<br>
+          <span class="badge badge-verde">Semanal</span> Revisar logs de errores y métricas de uso<br>
+          <span class="badge badge-azul">Mensual</span> Actualizar dependencias (NuGet, npm, Composer)<br>
+          <span class="badge badge-azul">Trimestral</span> Auditoría de seguridad, test de penetración básico<br>
+          <span class="badge badge-amarillo">Semestral</span> Revisión de arquitectura y deuda técnica<br>
+          <span class="badge badge-rojo">Anual</span> Renovación de certificados SSL, dominios, cuentas de desarrollador
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-accent" style="margin-bottom:10px">
+        <div class="card-title">⏰ Fechas de caducidad a controlar en BD</div>
+        <div class="card-body">
+          <div class="code" style="margin:0;font-size:.72rem">
+<span class="c">-- Tabla: alertas_caducidad</span><br>
+<span class="n">id, proyecto_id</span><br>
+<span class="n">tipo</span> <span class="c">-- ssl/dominio/cuenta_dev/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">licencia/api_key/backup/</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c">revision_seguridad</span><br>
+<span class="n">descripcion</span><br>
+<span class="n">fecha_caducidad</span><br>
+<span class="n">dias_aviso_previo</span> <span class="c">-- ej: 30</span><br>
+<span class="n">responsable_id</span><br>
+<span class="n">renovado</span> <span class="c">-- boolean</span><br>
+<span class="n">coste_renovacion</span>
+          </div>
+        </div>
+      </div>
+      <div class="card card-verde">
+        <div class="card-title">🎯 Caducidades críticas habituales</div>
+        <div class="card-body">
+          🔐 Certificado SSL — cada 90 días (Let's Encrypt) o 1 año<br>
+          🌐 Dominio — anual (renovar con 30 días de antelación)<br>
+          📱 Cuenta Google Play — nunca caduca pero revisar TOS<br>
+          🍎 Apple Developer — anual (99€). Si caduca, la app se retira<br>
+          🔑 API keys — según proveedor (rotar cada 6-12 meses)<br>
+          💾 Backups — verificar integridad mensual<br>
+          📋 Política de privacidad — revisar si cambia la ley
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 25: NORMAS DE CALIDAD ══ -->
+<div class="slide slide-std" data-slide="25">
+  <div class="slide-eyebrow">Calidad</div>
+  <div class="slide-title">Normas de Calidad en Desarrollo de Software</div>
+  <div class="slide-subtitle">La calidad no es hacer que funcione — es hacer que funcione bien, de forma predecible, mantenible y segura. Hay estándares internacionales para ello.</div>
+  <div class="grid-2">
+    <div>
+      <div class="card card-accent" style="margin-bottom:10px">
+        <div class="card-title">📐 ISO/IEC 25010 — Calidad del producto software</div>
+        <div class="card-body">
+          El estándar más importante para evaluar la calidad de una aplicación. Define 8 características:<br><br>
+          <span class="badge badge-azul">Funcionalidad</span> ¿Hace lo que debe?<br>
+          <span class="badge badge-azul">Rendimiento</span> ¿Es rápido y eficiente?<br>
+          <span class="badge badge-verde">Compatibilidad</span> ¿Funciona con otros sistemas?<br>
+          <span class="badge badge-verde">Usabilidad</span> ¿Es fácil de usar?<br>
+          <span class="badge badge-amarillo">Fiabilidad</span> ¿Falla poco? ¿Se recupera?<br>
+          <span class="badge badge-amarillo">Seguridad</span> ¿Protege los datos?<br>
+          <span class="badge badge-rojo">Mantenibilidad</span> ¿Es fácil de modificar?<br>
+          <span class="badge badge-rojo">Portabilidad</span> ¿Funciona en distintos entornos?
+        </div>
+      </div>
+      <div class="card card-verde">
+        <div class="card-title">🏭 CMMI — Madurez del proceso</div>
+        <div class="card-body">
+          Mide la madurez de los procesos de desarrollo de una organización. 5 niveles:<br><br>
+          1️⃣ <strong>Inicial</strong> — caótico, depende de personas<br>
+          2️⃣ <strong>Gestionado</strong> — procesos básicos definidos<br>
+          3️⃣ <strong>Definido</strong> — procesos estándar documentados<br>
+          4️⃣ <strong>Cuantitativamente gestionado</strong> — métricas<br>
+          5️⃣ <strong>En optimización</strong> — mejora continua<br><br>
+          La mayoría de startups opera en nivel 1-2. El objetivo es llegar a nivel 3.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-title">🧪 Tipos de testing obligatorios</div>
+        <div class="card-body">
+          <span class="badge badge-azul">Unit testing</span> Prueba funciones individuales. xUnit (.NET), PHPUnit (Laravel).<br><br>
+          <span class="badge badge-verde">Integration testing</span> Prueba que los módulos funcionan juntos. APIs, BBDD.<br><br>
+          <span class="badge badge-amarillo">UI testing</span> Prueba la interfaz de usuario. Appium (móvil), Playwright (web).<br><br>
+          <span class="badge badge-rojo">Security testing</span> OWASP ZAP, pruebas de inyección SQL, XSS.<br><br>
+          <span class="badge badge-azul">Performance testing</span> JMeter, k6 — ¿aguanta carga?<br><br>
+          <strong>Regla mínima:</strong> cobertura de tests &gt;70% en código crítico.
+        </div>
+      </div>
+      <div class="card card-amarillo">
+        <div class="card-title">📋 ISO 9001 y buenas prácticas</div>
+        <div class="card-body">
+          <span class="badge badge-amarillo">ISO 9001</span> Sistema de Gestión de Calidad. Aplicable a cualquier empresa, incluso software.<br><br>
+          <strong>Buenas prácticas mínimas:</strong><br>
+          ✅ Código revisado por otra persona (code review)<br>
+          ✅ Documentación actualizada con cada versión<br>
+          ✅ Control de versiones (Git) desde el día 1<br>
+          ✅ Entorno de staging antes de producción<br>
+          ✅ Rollback plan: cómo volver atrás si algo falla<br>
+          ✅ README claro en cada repositorio
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SLIDE 26: CIERRE FINAL ══ -->
+<div class="slide slide-cierre" data-slide="26">
+  <div style="max-width:620px;text-align:center">
+    <div style="font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#34D399;margin-bottom:20px">Resumen Final Completo</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,3.5vw,2rem);font-weight:800;line-height:1.3;margin-bottom:28px;background:linear-gradient(135deg,#fff,#6EE7B7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+      Un desarrollador que entiende<br>el negocio, la ley y la calidad<br>vale diez veces más que uno<br>que solo sabe programar.
+    </div>
+    <div class="grid-3" style="text-align:left;margin-bottom:24px">
+      <div class="card" style="background:rgba(59,130,246,0.1);border-color:rgba(59,130,246,0.2)">
+        <div style="font-size:.7rem;font-weight:700;color:#93C5FD;margin-bottom:6px;letter-spacing:1px">TÉCNICO</div>
+        <div style="font-size:.76rem;color:#CBD5E1;line-height:1.6">Arquitectura · APIs · MAUI · Laravel · SQLite · CI/CD · Testing · Git</div>
+      </div>
+      <div class="card" style="background:rgba(5,150,105,0.1);border-color:rgba(5,150,105,0.2)">
+        <div style="font-size:.7rem;font-weight:700;color:#34D399;margin-bottom:6px;letter-spacing:1px">NEGOCIO</div>
+        <div style="font-size:.76rem;color:#CBD5E1;line-height:1.6">Monetización · Distribución · Fiscalidad · Contratos · Crecimiento</div>
+      </div>
+      <div class="card" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.2)">
+        <div style="font-size:.7rem;font-weight:700;color:#FCD34D;margin-bottom:6px;letter-spacing:1px">GESTIÓN</div>
+        <div style="font-size:.76rem;color:#CBD5E1;line-height:1.6">Control BD · Equipo · Calidad ISO · Legal RGPD · Calendario · KPIs</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:28px">
+      <span class="badge badge-azul" style="font-size:.78rem;padding:5px 14px">ISO 25010</span>
+      <span class="badge badge-verde" style="font-size:.78rem;padding:5px 14px">RGPD</span>
+      <span class="badge badge-amarillo" style="font-size:.78rem;padding:5px 14px">Modelo 303</span>
+      <span class="badge badge-azul" style="font-size:.78rem;padding:5px 14px">OSS UE</span>
+      <span class="badge badge-verde" style="font-size:.78rem;padding:5px 14px">CMMI</span>
+      <span class="badge badge-amarillo" style="font-size:.78rem;padding:5px 14px">Google Play</span>
+      <span class="badge badge-rojo" style="font-size:.78rem;padding:5px 14px">ProductHunt</span>
+      <span class="badge badge-azul" style="font-size:.78rem;padding:5px 14px">Freemium</span>
+    </div>
+    <div style="font-size:.82rem;color:#6EE7B7;line-height:1.7;max-width:480px;margin:0 auto">
+      Esta presentación cubre el ciclo completo de un producto digital:<br>
+      desde la idea hasta los impuestos, pasando por el código.<br><br>
+      <strong style="color:#34D399">El mejor momento para aplicarlo fue ayer.<br>El segundo mejor momento es hoy.</strong>
+    </div>
+  </div>
+</div>
+
+</div><!-- slides-wrap -->
+
+<!-- CONTROLES -->
+<button class="nav-btn nav-prev" id="btnPrev" onclick="cambiar(-1)" disabled>← Anterior</button>
+<button class="nav-btn nav-next" id="btnNext" onclick="cambiar(1)">Siguiente →</button>
+
+<script>
+const TOTAL = document.querySelectorAll('.slide').length;
+let current = 0;
+
+// Crear dots
+const dotsEl = document.getElementById('dots');
+for(let i=0;i<TOTAL;i++){
+  const d = document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>irA(i);
+  dotsEl.appendChild(d);
+}
+
+function irA(n){
+  if(n<0||n>=TOTAL)return;
+  const slides=document.querySelectorAll('.slide');
+  slides[current].classList.remove('active');
+  slides[current].classList.add('out');
+  setTimeout(()=>slides[current].classList.remove('out'),400);
+  current=n;
+  slides[current].classList.add('active');
+  slides[current].scrollTop=0;
+  // progress
+  document.getElementById('progressBar').style.width=((current/(TOTAL-1))*100)+'%';
+  // counter
+  document.getElementById('slideCounter').textContent=(current+1)+' / '+TOTAL;
+  // dots
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current));
+  // buttons
+  document.getElementById('btnPrev').disabled=current===0;
+  document.getElementById('btnNext').disabled=current===TOTAL-1;
+  document.getElementById('btnNext').textContent=current===TOTAL-1?'✓ Fin':'Siguiente →';
+}
+
+function cambiar(dir){irA(current+dir)}
+
+// Teclado
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')cambiar(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')cambiar(-1);
+});
+
+// Init
+irA(0);
+</script>
+</body>
+</html>
